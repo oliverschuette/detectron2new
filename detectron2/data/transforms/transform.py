@@ -113,7 +113,8 @@ class ResizeTransform(Transform):
         assert img.shape[:2] == (self.h, self.w)
         assert len(img.shape) <= 4
         interp_method = interp if interp is not None else self.interp
-
+        """
+        Brauchen wir PIL überhaupr
         if img.dtype == np.uint8:
             if len(img.shape) > 2 and img.shape[2] == 1:
                 pil_image = Image.fromarray(img[:, :, 0], mode="L")
@@ -123,7 +124,8 @@ class ResizeTransform(Transform):
             ret = np.asarray(pil_image)
             if len(img.shape) > 2 and img.shape[2] == 1:
                 ret = np.expand_dims(ret, -1)
-        else:
+        """
+        if True:
             # PIL only supports uint8
             if any(x < 0 for x in img.strides):
                 img = np.ascontiguousarray(img)
