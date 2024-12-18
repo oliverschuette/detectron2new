@@ -17,12 +17,8 @@ from fvcore.transforms.transform import (
     TransformList,
 )
 from PIL import Image
+import cv2
 
-try:
-    import cv2  # noqa
-except ImportError:
-    # OpenCV is an optional dependency at the moment
-    pass
 
 __all__ = [
     "ExtentTransform",
@@ -125,7 +121,18 @@ class ResizeTransform(Transform):
             if len(img.shape) > 2 and img.shape[2] == 1:
                 ret = np.expand_dims(ret, -1)
         """
-        if True:
+
+        # ChatGPT Substitution of PIL
+        if img.dtype == np.uint8:
+            if len(img.shape) > 2 and img.shape[2] == 1:
+                # Single channel grayscale image
+                resized_img = cv2.resize(img[:, :, 0], (self.new_w, self.new_h), interpolation=cv2.INTER_LINEAR)
+                ret = np.expand_dims(resized_img, -1)  # Add back the channel dimension
+            else:
+                # Multi-channel image (e.g., RGB)
+                ret = cv2.resize(img, (self.new_w, self.new_h), interpolation=cv2.INTER_LINEAR)
+
+        else:
             # PIL only supports uint8
             if any(x < 0 for x in img.strides):
                 img = np.ascontiguousarray(img)
